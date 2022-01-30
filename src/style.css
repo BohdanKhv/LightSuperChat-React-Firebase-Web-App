@@ -1,0 +1,121 @@
+.App {
+    height: 100vh;
+    width: 100%;
+    background-color: black;
+    position: fixed;
+}
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+    background-color: #1d9bf0;
+    border-bottom-width: 2px;
+    border-bottom-color: gray;
+    padding: 0 15px;
+}
+.form {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    border-top: 1px solid #31363f;
+}
+.form .text-input {
+    width: 80%;
+    margin: 0;
+    background-color: #31363f;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    padding: 5px 15px;
+}
+.form .text-input:focus-visible,
+.form .btn-input:focus-visible {
+    outline: none;
+}
+.form .text-input::placeholder {
+    color: #ffffff;
+}
+.form .btn-input {
+    margin: 0;
+    cursor: pointer;
+    width: 20%;
+    background-color: #1d9bf0;
+    color: #ffffff;
+    font-size: 1.5rem;
+    border: none;
+}
+.header h6 {
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 400;
+}
+.container {
+    padding: 10px 15px;
+    overflow: scroll;
+    height: 85vh;
+    padding-bottom: 50px;
+}
+.message-container {
+    display: flex;
+    margin-bottom: 10px;
+}
+.user {
+    flex-direction: row-reverse;
+}
+.message-container img {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    object-fit: cover;
+    margin: 0 5px;
+}
+.message {
+    background-color: #31363f;
+    padding: 10px 15px;
+    border-radius: 20px;
+    margin-right: 50px;
+}
+.message-user {
+    background-color: #1d9bf0;
+    margin-right: 0px;
+    margin-left: 50px;
+}
+.message p {
+    font-size: 1rem;
+    color: #ffffff;
+}
+.message p small {
+    color: #31363f;
+}
+.btn-container {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    height: 100vh;
+}
+.btn-danger {
+    cursor: pointer;
+    height: 45px;
+    background-color: rgb(216, 81, 81);
+    border: none;
+    padding: 0 20px;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 18px;
+}
+.btn-outline {
+    cursor: pointer;
+    height: 45px;
+    background-color: transparent;
+    border: 1px solid #ffffff;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+    padding: 0 20px;
+    color: #ffffff;
+    font-size: 18px;
+}

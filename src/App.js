@@ -1,25 +1,140 @@
-import logo from './logo.svg';
-import './App.css';
+import './style.css';
 
-function App() {
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
+
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { useCollectionData, useCollectionDataOnce } from 'react-firebase-hooks/firestore';
+import { useEffect, useState } from 'react';
+
+firebase.initializeApp({
+  // apiKey: YOUR_API_KEY,
+  // authDomain: YOUR_AUTH_DOMAIN,
+  // databaseURL: YOUR_DATABASE_URL,
+  // projectId: YOUR_PROJECT_ID,
+  // storageBucket: '',
+  // messagingSenderId: YOUR_MESSAGING_SENDER_ID,
+})
+
+const auth = firebase.auth();
+const firestore = firebase.firestore();
+
+
+const App = () => {
+
+  const [user] = useAuthState(auth);
+  const [messages, setMessages] = useState([]);
+
+  function SignIn () {
+    const signInWithGoogle = () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider)
+    }
+    return (
+      <div className="btn-container">
+        <button
+            onClick={signInWithGoogle}
+            className='btn-danger'>
+            Sign in with Google
+        </button>
+      </div>
+    )
+  }
+
+  function SignOut () {
+    return auth.currentUser && (
+      <div className="">
+          <button
+              onClick={() => auth.signOut()}
+              className='btn-outline'>
+              Sign Out
+          </button>
+      </div>
+    )
+  }
+
+  async function getMessagesOnce() {
+    const messagesArr = [];
+    await firebase.firestore().collection('messages').orderBy('createdAt').limit(25).get()
+      .then(querySnapshot => {
+        querySnapshot.docs.forEach(doc => {
+        messagesArr.push(doc.data());
+      });
+    });
+    return setMessages(messagesArr);
+  }
+
+  function ChatRoom () {
+
+    // Too much reads because of loop 
+    const messagesRef = firestore.collection('messages')
+    // const query = messagesRef.orderBy('createdAt').limit(25)
+    // messages == null && ([messages] = useCollectionDataOnce(query, {idField: 'id'}))
+    // console.log(auth.currentUser.uid)
+
+    const [formValue, setFormValue] = useState('');
+
+    const sendMessage = async (e) => {
+
+      e.preventDefault()
+
+      const { uid, photoURL } = auth.currentUser;
+
+      await messagesRef.add({
+        text: formValue,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        uid,
+        photoURL
+      })
+
+      setFormValue('');
+      getMessagesOnce();
+
+    }
+
+    messages.length === 0 && getMessagesOnce()
+
+    return (
+      <div>
+        <header className="header"> 
+          <h6>&#128512; Light Super Chat</h6>
+          <SignOut/>
+        </header>
+        <main className="main">
+        <div className="container">
+          { messages.length != 0 && messages.map( msg => <Message key={msg.createdAt.seconds} message={msg}/> ) }
+        </div>
+          <form onSubmit={sendMessage} className="form">
+            <input value={formValue} onChange={(e) => setFormValue(e.target.value)} className="text-input" type="text" placeholder="Message &#x1F447; &#x1F447; &#x1F447;" />
+            <input className="btn-input" type="submit" value="&#128036;" />
+          </form>
+        </main>
+      </div>
+    )
+  }
+
+  function Message (props) {
+    const {text, uid, photoURL} = props.message;
+
+    return (
+      <div className={ uid === auth.currentUser.uid ? "message-container user" : "message-container" }>
+        <img src={photoURL}/>
+        <div className={ uid === auth.currentUser.uid ? "message message-user" : "message" }>
+          <p>
+            { text }
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='App'>
+      { user ? <ChatRoom /> : <SignIn />}
+      {/* <SignOut /> */}
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
