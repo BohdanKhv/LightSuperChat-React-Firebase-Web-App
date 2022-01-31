@@ -6,15 +6,9 @@ import 'firebase/compat/firestore';
 
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData, useCollectionDataOnce } from 'react-firebase-hooks/firestore';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 firebase.initializeApp({
-  // apiKey: YOUR_API_KEY,
-  // authDomain: YOUR_AUTH_DOMAIN,
-  // databaseURL: YOUR_DATABASE_URL,
-  // projectId: YOUR_PROJECT_ID,
-  // storageBucket: '',
-  // messagingSenderId: YOUR_MESSAGING_SENDER_ID,
 })
 
 const auth = firebase.auth();
@@ -54,7 +48,7 @@ const App = () => {
     )
   }
 
-  async function getMessagesOnce() {
+  async function getMessagesOnce () {
     const messagesArr = [];
     await firebase.firestore().collection('messages').orderBy('createdAt').limit(25).get()
       .then(querySnapshot => {
@@ -74,6 +68,7 @@ const App = () => {
     // console.log(auth.currentUser.uid)
 
     const [formValue, setFormValue] = useState('');
+    const bottom = useRef(null)
 
     const sendMessage = async (e) => {
 
@@ -90,6 +85,7 @@ const App = () => {
 
       setFormValue('');
       getMessagesOnce();
+      bottom.current.scrollIntoView();
 
     }
 
@@ -102,9 +98,16 @@ const App = () => {
           <SignOut/>
         </header>
         <main className="main">
-        <div className="container">
-          { messages.length != 0 && messages.map( msg => <Message key={msg.createdAt.seconds} message={msg}/> ) }
-        </div>
+          <div className="container">
+            { messages.length !== 0 && messages.map( msg => <Message key={msg.createdAt.seconds} message={msg}/> ) }
+            { messages.length !== 0 && messages.map( msg => <Message key={msg.createdAt.seconds} message={msg}/> ) }
+            { messages.length !== 0 && messages.map( msg => <Message key={msg.createdAt.seconds} message={msg}/> ) }
+            { messages.length !== 0 && messages.map( msg => <Message key={msg.createdAt.seconds} message={msg}/> ) }
+            { messages.length !== 0 && messages.map( msg => <Message key={msg.createdAt.seconds} message={msg}/> ) }
+            { messages.length !== 0 && messages.map( msg => <Message key={msg.createdAt.seconds} message={msg}/> ) }
+            
+            <div ref={bottom}></div>
+          </div>
           <form onSubmit={sendMessage} className="form">
             <input value={formValue} onChange={(e) => setFormValue(e.target.value)} className="text-input" type="text" placeholder="Message &#x1F447; &#x1F447; &#x1F447;" />
             <input className="btn-input" type="submit" value="&#128036;" />
